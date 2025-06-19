@@ -65,7 +65,65 @@ async function loadProfileImage() {
     }
 }
 
-// Load the image when the page loads
+async function loadGalleryImages() {
+    // Gallery image filenames to try
+    const galleryFiles = [
+        { id: 'gallery1', files: ['gallery1.jpg', 'gallery1.jpeg', 'gallery1.png', 'field1.jpg', 'reporting1.jpg'] },
+        { id: 'gallery2', files: ['gallery2.jpg', 'gallery2.jpeg', 'gallery2.png', 'interview1.jpg', 'meeting1.jpg'] },
+        { id: 'gallery3', files: ['gallery3.jpg', 'gallery3.jpeg', 'gallery3.png', 'event1.jpg', 'press1.jpg'] },
+        { id: 'gallery4', files: ['gallery4.jpg', 'gallery4.jpeg', 'gallery4.png', 'behind1.jpg', 'work1.jpg'] },
+        { id: 'gallery5', files: ['gallery5.jpg', 'gallery5.jpeg', 'gallery5.png', 'location1.jpg', 'site1.jpg'] },
+        { id: 'gallery6', files: ['gallery6.jpg', 'gallery6.jpeg', 'gallery6.png', 'press2.jpg', 'journalism1.jpg'] }
+    ];
+
+    for (const item of galleryFiles) {
+        for (const filename of item.files) {
+            try {
+                const response = await fetch(filename);
+                if (response.ok) {
+                    const galleryItem = document.getElementById(item.id);
+                    const img = document.createElement('img');
+                    img.src = filename;
+                    img.alt = `Gallery Image ${item.id}`;
+                    img.onclick = () => openModal(filename);
+
+                    galleryItem.innerHTML = '';
+                    galleryItem.appendChild(img);
+                    break; // Found image, move to next gallery item
+                }
+            } catch (e) {
+                continue; // Try next filename
+            }
+        }
+    }
+}
+
+function openModal(imageSrc) {
+    const modal = document.getElementById('galleryModal');
+    const modalImage = document.getElementById('modalImage');
+    modalImage.src = imageSrc;
+    modal.classList.add('active');
+}
+
+function closeModal() {
+    const modal = document.getElementById('galleryModal');
+    modal.classList.remove('active');
+}
+
+// Close modal when clicking outside the image
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('galleryModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    }
+});
+
+// Load images when the page loads
 window.addEventListener('load', function() {
     loadProfileImage();
+    loadGalleryImages();
 });
