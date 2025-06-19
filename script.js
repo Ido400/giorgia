@@ -73,7 +73,9 @@ async function loadGalleryImages() {
         { id: 'gallery3', files: ['gallery3.jpg', 'gallery3.jpeg', 'gallery3.png', 'event1.jpg', 'press1.jpg'] },
         { id: 'gallery4', files: ['gallery4.jpg', 'gallery4.jpeg', 'gallery4.png', 'behind1.jpg', 'work1.jpg'] },
         { id: 'gallery5', files: ['gallery5.jpg', 'gallery5.jpeg', 'gallery5.png', 'location1.jpg', 'site1.jpg'] },
-        { id: 'gallery6', files: ['gallery6.jpg', 'gallery6.jpeg', 'gallery6.png', 'press2.jpg', 'journalism1.jpg'] }
+        { id: 'gallery6', files: ['gallery6.jpg', 'gallery6.jpeg', 'gallery6.png', 'press2.jpg', 'journalism1.jpg'] },
+        { id: 'gallery7', files: ['gallery7.jpg', 'gallery7.jpeg', 'gallery7.png', 'equipment1.jpg', 'camera1.jpg'] },
+        { id: 'gallery8', files: ['gallery8.jpg', 'gallery8.jpeg', 'gallery8.png', 'team1.jpg', 'group1.jpg'] }
     ];
 
     for (const item of galleryFiles) {
