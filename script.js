@@ -127,34 +127,52 @@ async function loadGalleryImages() {
         }
     }
 
-    // Now create gallery items for all loaded images
+    // Professional journalism photo descriptions
+    const photoDescriptions = {
+        1: "Diplomatic Meeting Coverage",
+        2: "Interview with Regional Official",
+        3: "Press Conference Documentation",
+        4: "Field Reporting Assignment",
+        5: "Political Analysis Session",
+        6: "Cultural Affairs Coverage",
+        7: "International Relations Event",
+        8: "Expert Interview Session",
+        9: "Government Building Visit",
+        10: "Historical Documentation",
+        11: "Policy Discussion Coverage",
+        12: "Regional Affairs Meeting",
+        13: "Parliamentary Session Coverage",
+        14: "International Summit Documentation",
+        15: "Bilateral Talks Coverage",
+        16: "Media Briefing Session",
+        17: "Official State Visit",
+        18: "Regional Conference Coverage",
+        19: "Expert Panel Discussion",
+        20: "Cultural Exchange Event"
+    };
+
+    // Create gallery items for loaded images
     if (loadedImages.length > 0) {
         loadedImages.forEach(imageData => {
             const galleryItem = document.createElement('div');
             galleryItem.className = 'gallery-item';
-            galleryItem.id = `gallery${imageData.index}`;
 
-            // Add professional hover description
-            const description = photoDescriptions[imageData.index] || "Professional Journalism Documentation";
+            const description = photoDescriptions[imageData.index] || `Professional Documentation ${imageData.index}`;
             galleryItem.title = description;
 
-            // Create image with professional styling
             const img = document.createElement('img');
             img.src = imageData.path;
             img.alt = description;
             img.onclick = () => openModal(imageData.path, description);
 
-            // Add loading and error handling
-            img.onload = () => {
-                galleryItem.classList.add('loaded');
-            };
-
+            // Simple loading states
+            img.onload = () => galleryItem.classList.add('loaded');
             img.onerror = () => {
                 galleryItem.innerHTML = `
-                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; text-align: center; padding: 20px;">
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; text-align: center;">
                         <div>
                             <div style="font-size: 24px; margin-bottom: 8px;">📷</div>
-                            <div style="font-size: 12px;">Photo ${imageData.index}</div>
+                            <div style="font-size: 12px;">${description}</div>
                         </div>
                     </div>
                 `;
@@ -164,14 +182,16 @@ async function loadGalleryImages() {
             galleryContainer.appendChild(galleryItem);
         });
 
-        console.log(`Successfully loaded ${photosLoaded} gallery images`);
+        console.log(`✓ Gallery loaded: ${photosLoaded} journalism photos`);
 
         // Update scroll indicator
         const indicator = document.querySelector('.scroll-indicator');
-        if (indicator && photosLoaded > 3) {
-            indicator.textContent = `← Scroll to explore ${photosLoaded} photos →`;
-        } else if (indicator) {
-            indicator.textContent = `${photosLoaded} photos`;
+        if (indicator) {
+            if (photosLoaded > 3) {
+                indicator.textContent = `← Scroll to explore ${photosLoaded} photos →`;
+            } else {
+                indicator.textContent = `${photosLoaded} professional photos`;
+            }
         }
     } else {
         // Show helpful placeholder message for professional portfolio
@@ -265,12 +285,17 @@ function setupModalControls() {
         });
     }
 
-    // Add gallery loading animations
+    // Add gallery loading animations and improved proportions
     const style = document.createElement('style');
     style.textContent = `
         .gallery-item {
             opacity: 0.7;
             transition: opacity 0.3s ease, transform 0.3s ease;
+            /* Better proportions for journalism photos */
+            min-width: 320px;
+            width: 320px;
+            height: 240px;
+            aspect-ratio: 4/3;
         }
 
         .gallery-item.loaded {
@@ -278,16 +303,27 @@ function setupModalControls() {
         }
 
         .gallery-item:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
         }
 
         .gallery-item img {
             transition: transform 0.3s ease;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
         }
 
         .gallery-item:hover img {
-            transform: scale(1.05);
+            transform: scale(1.02);
+        }
+
+        .gallery-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #000 #f8f9fa;
+            padding: 15px 0;
+            gap: 15px;
         }
 
         .modal-caption {
@@ -305,9 +341,21 @@ function setupModalControls() {
             }
         }
 
-        .gallery-scroll {
-            scrollbar-width: thin;
-            scrollbar-color: #000 #f8f9fa;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .gallery-item {
+                min-width: 280px;
+                width: 280px;
+                height: 210px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-item {
+                min-width: 250px;
+                width: 250px;
+                height: 190px;
+            }
         }
     `;
     document.head.appendChild(style);
