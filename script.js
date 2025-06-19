@@ -134,11 +134,31 @@ async function loadGalleryImages() {
             galleryItem.className = 'gallery-item';
             galleryItem.id = `gallery${imageData.index}`;
 
-            // Clone the image to avoid issues
+            // Add professional hover description
+            const description = photoDescriptions[imageData.index] || "Professional Journalism Documentation";
+            galleryItem.title = description;
+
+            // Create image with professional styling
             const img = document.createElement('img');
             img.src = imageData.path;
-            img.alt = `Gallery Image ${imageData.index}`;
-            img.onclick = () => openModal(imageData.path);
+            img.alt = description;
+            img.onclick = () => openModal(imageData.path, description);
+
+            // Add loading and error handling
+            img.onload = () => {
+                galleryItem.classList.add('loaded');
+            };
+
+            img.onerror = () => {
+                galleryItem.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; text-align: center; padding: 20px;">
+                        <div>
+                            <div style="font-size: 24px; margin-bottom: 8px;">📷</div>
+                            <div style="font-size: 12px;">Photo ${imageData.index}</div>
+                        </div>
+                    </div>
+                `;
+            };
 
             galleryItem.appendChild(img);
             galleryContainer.appendChild(galleryItem);
@@ -154,16 +174,20 @@ async function loadGalleryImages() {
             indicator.textContent = `${photosLoaded} photos`;
         }
     } else {
-        // Show helpful placeholder message
+        // Show helpful placeholder message for professional portfolio
         const placeholderItem = document.createElement('div');
         placeholderItem.className = 'gallery-item';
         placeholderItem.innerHTML = `
-            <div class="placeholder-text">
-                Upload photos to gallery folder<br>
-                <small style="font-size: 0.8em; margin-top: 5px; display: block;">
-                    Expected format: gallery/1.jpg, gallery/2.jpg, etc.<br>
-                    Supported: .jpg, .jpeg, .png, .webp
-                </small>
+            <div class="placeholder-text" style="text-align: center; padding: 30px;">
+                <div style="font-size: 48px; margin-bottom: 15px; opacity: 0.6;">📸</div>
+                <div style="font-size: 18px; font-weight: 500; margin-bottom: 10px;">Professional Photography Portfolio</div>
+                <div style="font-size: 14px; color: #666; line-height: 1.4;">
+                    Upload your journalism photos to the gallery folder<br>
+                    <small style="font-size: 12px; margin-top: 8px; display: block; opacity: 0.8;">
+                        Expected: gallery/1.jpg, gallery/2.jpg, etc.<br>
+                        Formats: .jpg, .jpeg, .png, .webp
+                    </small>
+                </div>
             </div>
         `;
         galleryContainer.appendChild(placeholderItem);
@@ -171,11 +195,40 @@ async function loadGalleryImages() {
     }
 }
 
-function openModal(imageSrc) {
+function openModal(imageSrc, description = "") {
     const modal = document.getElementById('galleryModal');
     if (modal) {
         const modalImage = document.getElementById('modalImage');
         modalImage.src = imageSrc;
+        modalImage.alt = description;
+
+        // Add description to modal if available
+        let existingCaption = modal.querySelector('.modal-caption');
+        if (description && description !== "Gallery Image") {
+            if (!existingCaption) {
+                existingCaption = document.createElement('div');
+                existingCaption.className = 'modal-caption';
+                existingCaption.style.cssText = `
+                    position: absolute;
+                    bottom: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(0,0,0,0.8);
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 6px;
+                    font-size: 16px;
+                    text-align: center;
+                    max-width: 80%;
+                `;
+                modal.querySelector('.modal-content').appendChild(existingCaption);
+            }
+            existingCaption.textContent = description;
+            existingCaption.style.display = 'block';
+        } else if (existingCaption) {
+            existingCaption.style.display = 'none';
+        }
+
         modal.classList.add('active');
 
         // Prevent body scrolling when modal is open
@@ -193,7 +246,7 @@ function closeModal() {
     }
 }
 
-// Enhanced modal controls
+// Enhanced modal controls and gallery styling
 function setupModalControls() {
     const modal = document.getElementById('galleryModal');
     if (modal) {
@@ -211,16 +264,64 @@ function setupModalControls() {
             }
         });
     }
+
+    // Add gallery loading animations
+    const style = document.createElement('style');
+    style.textContent = `
+        .gallery-item {
+            opacity: 0.7;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .gallery-item.loaded {
+            opacity: 1;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery-item img {
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .modal-caption {
+            animation: fadeInUp 0.3s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .gallery-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #000 #f8f9fa;
+        }
+    `;
+    document.head.appendChild(style);
 }
 
-// Improved error handling and loading indicators
+// Professional loading indicator for journalism portfolio
 function showLoadingIndicator() {
     const galleryContainer = document.getElementById('photoGallery');
     galleryContainer.innerHTML = `
-        <div class="gallery-item" style="justify-content: center; align-items: center;">
-            <div style="text-align: center; color: #666;">
-                <div style="margin-bottom: 10px;">📸</div>
-                <div>Loading gallery...</div>
+        <div class="gallery-item" style="justify-content: center; align-items: center; min-width: 320px;">
+            <div style="text-align: center; color: #333;">
+                <div style="font-size: 36px; margin-bottom: 15px; opacity: 0.7;">📰</div>
+                <div style="font-size: 16px; font-weight: 500;">Loading Professional Portfolio...</div>
+                <div style="font-size: 12px; margin-top: 8px; opacity: 0.6;">Searching for journalism photography</div>
             </div>
         </div>
     `;
