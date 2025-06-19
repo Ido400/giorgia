@@ -130,6 +130,9 @@ h1 {
 .gallery-scroll-container {
     position: relative;
     margin-bottom: 30px;
+    /* Fix: Remove container padding that causes overflow issues */
+    margin-left: -20px;
+    margin-right: -20px;
 }
 
 .gallery-scroll {
@@ -137,9 +140,11 @@ h1 {
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
-    gap: 20px;
-    padding: 20px 0;
+    gap: 15px;
+    padding: 20px;
     -webkit-overflow-scrolling: touch;
+    /* Fix: Ensure smooth scrolling on iOS */
+    scroll-snap-type: x mandatory;
 }
 
 .gallery-scroll::-webkit-scrollbar {
@@ -173,6 +178,8 @@ h1 {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    /* Fix: Add scroll snap */
+    scroll-snap-align: start;
 }
 
 .gallery-item:hover {
@@ -314,7 +321,12 @@ h1 {
     text-align: center;
 }
 
+/* MOBILE FIXES */
 @media (max-width: 768px) {
+    body {
+        padding: 20px 10px;
+    }
+
     h1 {
         font-size: 2.2em;
     }
@@ -324,16 +336,56 @@ h1 {
         height: 250px;
     }
 
+    .container {
+        padding: 0 10px;
+    }
+
+    /* Fix: Better mobile gallery layout */
+    .gallery-scroll-container {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+
+    .gallery-scroll {
+        gap: 10px;
+        padding: 15px 10px;
+    }
+
     .gallery-item {
-        min-width: 240px;
-        height: 180px;
+        /* Fix: Smaller width for mobile, ensuring multiple items are visible */
+        min-width: 200px;
+        height: 150px;
     }
 
     .scroll-indicator {
         font-size: 0.8em;
+        padding: 0 10px;
+    }
+}
+
+/* EXTRA SMALL MOBILE FIXES */
+@media (max-width: 480px) {
+    body {
+        padding: 15px 5px;
+    }
+
+    .gallery-scroll-container {
+        margin-left: -5px;
+        margin-right: -5px;
+    }
+
+    .gallery-scroll {
+        padding: 15px 5px;
+        gap: 8px;
+    }
+
+    .gallery-item {
+        /* Fix: Even smaller for very small screens */
+        min-width: 180px;
+        height: 135px;
     }
 
     .container {
-        padding: 0 15px;
+        padding: 0 5px;
     }
 }
