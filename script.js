@@ -149,10 +149,10 @@ async function loadGalleryImages() {
         console.log('No gallery images found, showing placeholder');
     } else {
         console.log(`Successfully loaded ${photosLoaded} gallery images`);
-        // Update scroll indicator
+        // Update scroll indicator for vertical scrolling
         const indicator = document.querySelector('.scroll-indicator');
-        if (indicator && photosLoaded > 3) {
-            indicator.textContent = `← Scroll to explore ${photosLoaded} photos →`;
+        if (indicator && photosLoaded > 2) {
+            indicator.textContent = `↑ Scroll to explore ${photosLoaded} photos ↓`;
         }
     }
 }
