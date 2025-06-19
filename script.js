@@ -36,10 +36,10 @@ async function loadProfileImage() {
                     img.src = filename;
                     img.alt = 'Giorgia Valente';
                     img.onload = function() {
-                        console.log('Successfully loaded:', filename);
+                        console.log('Successfully loaded profile image:', filename);
                     };
                     img.onerror = function() {
-                        console.log('Failed to load:', filename);
+                        console.log('Failed to load profile image:', filename);
                     };
 
                     document.getElementById('profileImage').innerHTML = '';
@@ -48,7 +48,7 @@ async function loadProfileImage() {
                     break; // Successfully loaded image
                 }
             } catch (e) {
-                console.log('Error trying to load:', filename, e);
+                console.log('Error trying to load profile image:', filename, e);
                 continue; // Try next filename
             }
         }
@@ -56,60 +56,121 @@ async function loadProfileImage() {
         if (!imageLoaded) {
             // Fallback to placeholder if no image is found
             document.getElementById('profileImage').innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #000; font-size: 18px;">Professional Photo</div>';
-            console.log('No image found, showing placeholder');
+            console.log('No profile image found, showing placeholder');
         }
     } catch (error) {
-        console.log('Could not load image:', error);
+        console.log('Could not load profile image:', error);
         // Fallback to placeholder if image can't be loaded
         document.getElementById('profileImage').innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #000; font-size: 18px;">Professional Photo</div>';
     }
 }
 
 async function loadGalleryImages() {
-    // Gallery image filenames to try
-    const galleryFiles = [
-        { id: 'gallery1', files: ['gallery1.jpg', 'gallery1.jpeg', 'gallery1.png', 'field1.jpg', 'reporting1.jpg'] },
-        { id: 'gallery2', files: ['gallery2.jpg', 'gallery2.jpeg', 'gallery2.png', 'interview1.jpg', 'meeting1.jpg'] },
-        { id: 'gallery3', files: ['gallery3.jpg', 'gallery3.jpeg', 'gallery3.png', 'event1.jpg', 'press1.jpg'] },
-        { id: 'gallery4', files: ['gallery4.jpg', 'gallery4.jpeg', 'gallery4.png', 'behind1.jpg', 'work1.jpg'] },
-        { id: 'gallery5', files: ['gallery5.jpg', 'gallery5.jpeg', 'gallery5.png', 'location1.jpg', 'site1.jpg'] },
-        { id: 'gallery6', files: ['gallery6.jpg', 'gallery6.jpeg', 'gallery6.png', 'press2.jpg', 'journalism1.jpg'] },
-        { id: 'gallery7', files: ['gallery7.jpg', 'gallery7.jpeg', 'gallery7.png', 'equipment1.jpg', 'camera1.jpg'] },
-        { id: 'gallery8', files: ['gallery8.jpg', 'gallery8.jpeg', 'gallery8.png', 'team1.jpg', 'group1.jpg'] }
-    ];
+    const galleryContainer = document.getElementById('photoGallery');
+    let photosLoaded = 0;
+    const maxPhotos = 40;
 
-    for (const item of galleryFiles) {
-        for (const filename of item.files) {
+    // Clear any existing content
+    galleryContainer.innerHTML = '';
+
+    console.log('Starting to load gallery images...');
+
+    // Try to load up to 40 photos from various naming patterns
+    for (let i = 1; i <= maxPhotos; i++) {
+        const possiblePaths = [
+            // Photos in gallery folder
+            `gallery/${i}.jpg`,
+            `gallery/${i}.jpeg`,
+            `gallery/${i}.png`,
+            `gallery/${i}.webp`,
+            `gallery/photo${i}.jpg`,
+            `gallery/photo${i}.jpeg`,
+            `gallery/photo${i}.png`,
+            `gallery/img${i}.jpg`,
+            `gallery/image${i}.jpg`,
+            `gallery/gallery${i}.jpg`,
+            // Photos in root directory (fallback)
+            `gallery${i}.jpg`,
+            `gallery${i}.jpeg`,
+            `gallery${i}.png`,
+            `photo${i}.jpg`,
+            `image${i}.jpg`,
+            `img${i}.jpg`
+        ];
+
+        let imageLoaded = false;
+
+        for (const imagePath of possiblePaths) {
             try {
-                const response = await fetch(filename);
+                const response = await fetch(imagePath);
                 if (response.ok) {
-                    const galleryItem = document.getElementById(item.id);
-                    const img = document.createElement('img');
-                    img.src = filename;
-                    img.alt = `Gallery Image ${item.id}`;
-                    img.onclick = () => openModal(filename);
+                    // Create gallery item
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-item';
+                    galleryItem.id = `gallery${i}`;
 
-                    galleryItem.innerHTML = '';
+                    // Create image element
+                    const img = document.createElement('img');
+                    img.src = imagePath;
+                    img.alt = `Gallery Image ${i}`;
+                    img.onclick = () => openModal(imagePath);
+
                     galleryItem.appendChild(img);
-                    break; // Found image, move to next gallery item
+                    galleryContainer.appendChild(galleryItem);
+
+                    photosLoaded++;
+                    imageLoaded = true;
+                    console.log(`Loaded gallery image ${i}: ${imagePath}`);
+                    break; // Found image, move to next number
                 }
             } catch (e) {
-                continue; // Try next filename
+                continue; // Try next path
             }
+        }
+
+        if (!imageLoaded) {
+            // Stop trying if we hit 3 consecutive missing photos (after photo 8)
+            if (i > 8 && photosLoaded > 0) {
+                const missingCount = i - photosLoaded;
+                if (missingCount >= 3) {
+                    console.log(`Stopped loading at photo ${i} due to consecutive missing images`);
+                    break;
+                }
+            }
+        }
+    }
+
+    // If no photos were loaded, show placeholder message
+    if (photosLoaded === 0) {
+        const placeholderItem = document.createElement('div');
+        placeholderItem.className = 'gallery-item';
+        placeholderItem.innerHTML = '<div class="placeholder-text">Upload photos to gallery folder<br><small>gallery/1.jpg, gallery/2.jpg, etc.</small></div>';
+        galleryContainer.appendChild(placeholderItem);
+        console.log('No gallery images found, showing placeholder');
+    } else {
+        console.log(`Successfully loaded ${photosLoaded} gallery images`);
+        // Update scroll indicator
+        const indicator = document.querySelector('.scroll-indicator');
+        if (indicator && photosLoaded > 3) {
+            indicator.textContent = `← Scroll to explore ${photosLoaded} photos →`;
         }
     }
 }
 
 function openModal(imageSrc) {
     const modal = document.getElementById('galleryModal');
-    const modalImage = document.getElementById('modalImage');
-    modalImage.src = imageSrc;
-    modal.classList.add('active');
+    if (modal) {
+        const modalImage = document.getElementById('modalImage');
+        modalImage.src = imageSrc;
+        modal.classList.add('active');
+    }
 }
 
 function closeModal() {
     const modal = document.getElementById('galleryModal');
-    modal.classList.remove('active');
+    if (modal) {
+        modal.classList.remove('active');
+    }
 }
 
 // Close modal when clicking outside the image
