@@ -104,18 +104,41 @@ async function loadGalleryImages() {
             try {
                 const response = await fetch(imagePath);
                 if (response.ok) {
-                    // Create gallery item
+                    // Create gallery item with new structure
                     const galleryItem = document.createElement('div');
-                    galleryItem.className = 'gallery-item';
-                    galleryItem.id = `gallery${i}`;
+                    galleryItem.className = 'gallery__item';
 
-                    // Create image element
-                    const img = document.createElement('img');
-                    img.src = imagePath;
-                    img.alt = `Gallery Image ${i}`;
-                    img.onclick = () => openModal(imagePath);
+                    // Create radio input
+                    const radioInput = document.createElement('input');
+                    radioInput.type = 'radio';
+                    radioInput.id = `img-${i}`;
+                    radioInput.name = 'gallery';
+                    radioInput.className = 'gallery__selector';
+                    if (i === 1) radioInput.checked = true; // First image selected by default
 
-                    galleryItem.appendChild(img);
+                    // Create main image
+                    const mainImg = document.createElement('img');
+                    mainImg.className = 'gallery__img';
+                    mainImg.src = imagePath;
+                    mainImg.alt = `Gallery Image ${i}`;
+                    mainImg.onclick = () => openModal(imagePath);
+
+                    // Create thumbnail label
+                    const thumbLabel = document.createElement('label');
+                    thumbLabel.htmlFor = `img-${i}`;
+                    thumbLabel.className = 'gallery__thumb';
+
+                    // Create thumbnail image
+                    const thumbImg = document.createElement('img');
+                    thumbImg.src = imagePath; // Using same image for thumb, could be optimized
+                    thumbImg.alt = `Thumbnail ${i}`;
+
+                    // Assemble the gallery item
+                    thumbLabel.appendChild(thumbImg);
+                    galleryItem.appendChild(radioInput);
+                    galleryItem.appendChild(mainImg);
+                    galleryItem.appendChild(thumbLabel);
+
                     galleryContainer.appendChild(galleryItem);
 
                     photosLoaded++;
@@ -142,18 +165,22 @@ async function loadGalleryImages() {
 
     // If no photos were loaded, show placeholder message
     if (photosLoaded === 0) {
-        const placeholderItem = document.createElement('div');
-        placeholderItem.className = 'gallery-item';
-        placeholderItem.innerHTML = '<div class="placeholder-text">Upload photos to gallery folder<br><small>gallery/1.jpg, gallery/2.jpg, etc.</small></div>';
-        galleryContainer.appendChild(placeholderItem);
+        galleryContainer.innerHTML = '<div class="placeholder-text">Upload photos to gallery folder<br><small>gallery/1.jpg, gallery/2.jpg, etc.</small></div>';
         console.log('No gallery images found, showing placeholder');
     } else {
         console.log(`Successfully loaded ${photosLoaded} gallery images`);
-        // Update scroll indicator for vertical scrolling
-        const indicator = document.querySelector('.scroll-indicator');
-        if (indicator && photosLoaded > 2) {
-            indicator.textContent = `↑ Scroll to explore ${photosLoaded} photos ↓`;
-        }
+
+        // Create thumbnails container
+        const thumbnailsContainer = document.createElement('div');
+        thumbnailsContainer.className = 'gallery__thumbnails';
+
+        // Move all thumbnails to the container
+        const thumbs = galleryContainer.querySelectorAll('.gallery__thumb');
+        thumbs.forEach(thumb => {
+            thumbnailsContainer.appendChild(thumb);
+        });
+
+        galleryContainer.appendChild(thumbnailsContainer);
     }
 }
 
