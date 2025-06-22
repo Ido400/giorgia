@@ -75,6 +75,14 @@ async function loadGalleryImages() {
 
     console.log('Starting to load gallery images...');
 
+    // Create main container for images
+    const mainContainer = document.createElement('div');
+    mainContainer.className = 'gallery__main-container';
+
+    // Create thumbnails container
+    const thumbnailsContainer = document.createElement('div');
+    thumbnailsContainer.className = 'gallery__thumbnails';
+
     // Try to load up to 40 photos from various naming patterns
     for (let i = 1; i <= maxPhotos; i++) {
         const possiblePaths = [
@@ -104,10 +112,6 @@ async function loadGalleryImages() {
             try {
                 const response = await fetch(imagePath);
                 if (response.ok) {
-                    // Create gallery item with new structure
-                    const galleryItem = document.createElement('div');
-                    galleryItem.className = 'gallery__item';
-
                     // Create radio input
                     const radioInput = document.createElement('input');
                     radioInput.type = 'radio';
@@ -130,16 +134,14 @@ async function loadGalleryImages() {
 
                     // Create thumbnail image
                     const thumbImg = document.createElement('img');
-                    thumbImg.src = imagePath; // Using same image for thumb, could be optimized
+                    thumbImg.src = imagePath;
                     thumbImg.alt = `Thumbnail ${i}`;
 
-                    // Assemble the gallery item
+                    // Add to containers
                     thumbLabel.appendChild(thumbImg);
-                    galleryItem.appendChild(radioInput);
-                    galleryItem.appendChild(mainImg);
-                    galleryItem.appendChild(thumbLabel);
-
-                    galleryContainer.appendChild(galleryItem);
+                    mainContainer.appendChild(radioInput);
+                    mainContainer.appendChild(mainImg);
+                    thumbnailsContainer.appendChild(thumbLabel);
 
                     photosLoaded++;
                     imageLoaded = true;
@@ -163,24 +165,14 @@ async function loadGalleryImages() {
         }
     }
 
-    // If no photos were loaded, show placeholder message
+    // Add containers to gallery
     if (photosLoaded === 0) {
         galleryContainer.innerHTML = '<div class="placeholder-text">Upload photos to gallery folder<br><small>gallery/1.jpg, gallery/2.jpg, etc.</small></div>';
         console.log('No gallery images found, showing placeholder');
     } else {
-        console.log(`Successfully loaded ${photosLoaded} gallery images`);
-
-        // Create thumbnails container
-        const thumbnailsContainer = document.createElement('div');
-        thumbnailsContainer.className = 'gallery__thumbnails';
-
-        // Move all thumbnails to the container
-        const thumbs = galleryContainer.querySelectorAll('.gallery__thumb');
-        thumbs.forEach(thumb => {
-            thumbnailsContainer.appendChild(thumb);
-        });
-
+        galleryContainer.appendChild(mainContainer);
         galleryContainer.appendChild(thumbnailsContainer);
+        console.log(`Successfully loaded ${photosLoaded} gallery images`);
     }
 }
 
